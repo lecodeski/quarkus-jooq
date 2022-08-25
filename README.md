@@ -61,7 +61,7 @@ You can just configure the `quarkus-jooq` extension by adding the following depe
 
 ```xml
 <dependency>
-    <groupId>io.quarkiverse.jooq</groupId>
+    <groupId>io.lecodeski.jooq</groupId>
     <artifactId>quarkus-jooq</artifactId>
     <version>${latest.release.version}</version>
 </dependency>

@@ -22,16 +22,9 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v3
-        with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
       - uses: actions/setup-java@v1.4.3
         with:
-          java-version: 11
+          java-version: 17
 
       - name: Cache local Maven repository
         uses: actions/cache@v2
@@ -46,14 +39,11 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Maven release ${{steps.metadata.outputs.current-version}}
-        run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{secrets.GPG_PASSPHRASE}}" --output maven-settings.xml .github/release/maven-settings.xml.gpg
-          git checkout -b release
-          mvn -B release:prepare -Prelease -DreleaseVersion=${{steps.metadata.outputs.current-version}} -DdevelopmentVersion=${{steps.metadata.outputs.next-version}} -s maven-settings.xml
-          git checkout ${{github.base_ref}}
-          git rebase release
-          mvn -B release:perform -Darguments=-DperformRelease -DperformRelease -Prelease -s maven-settings.xml
+      - name: Maven Library build and publish
+        uses: MathieuSoysal/Java-maven-library-publisher@v1.0.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          java-version: 17
 
       - name: Push changes to ${{github.base_ref}}
         uses: ad-m/github-push-action@v0.6.0
